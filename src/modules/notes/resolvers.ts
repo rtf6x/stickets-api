@@ -1,6 +1,7 @@
 import { ApolloError } from 'apollo-server-errors';
 import Note from '../../db/models/note';
 import User from '../../db/models/user';
+import { Schema } from "mongoose";
 
 const scopes = ['global', 'site', 'page'];
 
@@ -75,7 +76,9 @@ export default {
             if (!note || !note._id) {
                 return { message: 'note not found', code: 105 };
             }
-            note.sharedWith = (note.sharedWith || []).filter((uid: any) => uid.toString() !== shareUser._id.toString());
+            note.sharedWith = (note.sharedWith || []).filter(
+                (uid: Schema.Types.ObjectId) => uid.toString() !== shareUser._id.toString()
+            );
             note.sharedWith.push(shareUser._id);
             await note.save();
             return { message: 'ok', code: 0 };
@@ -95,7 +98,9 @@ export default {
             if (!note || !note._id) {
                 return { message: 'note not found', code: 105 };
             }
-            note.sharedWith = (note.sharedWith || []).filter((uid: any) => uid.toString() !== shareUser._id.toString());
+            note.sharedWith = (note.sharedWith || []).filter(
+                (uid: Schema.Types.ObjectId) => uid.toString() !== shareUser._id.toString()
+            );
             await note.save();
             return { message: 'ok', code: 0 };
         }
