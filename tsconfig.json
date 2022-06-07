@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "strict": false,
+    "plugins": [
+      {
+        "name": "ts-graphql-plugin",
+        "schema": "path-or-url-to-your-schema.graphql",
+        "tag": "gql"
+      }
+    ],
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "importHelpers": true,
+    "rootDirs": [
+      "./src"
+    ],
+    "outDir": "build"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
