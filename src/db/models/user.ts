@@ -22,7 +22,6 @@ interface GoogleProfile {
 
 interface UserModelInterface extends Model<any> {
     getUserByToken(token: String): any;
-
     upsertGoogleUser(response: GoogleResponse): any;
 }
 
