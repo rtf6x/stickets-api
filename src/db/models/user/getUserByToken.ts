@@ -9,7 +9,7 @@ interface getUserError {
 
 export interface getUserResult {
   error: getUserError | null,
-  user: getUserError | null,
+  user: Document | null,
 }
 
 export default async function (token: string): Promise<getUserResult> {

@@ -1,6 +1,19 @@
-import { gql } from 'apollo-server';
+import { gql } from 'apollo-server-express';
 
 export default gql`
+    enum NotificationType {
+        noteCreated
+        noteUpdated
+        noteDeleted
+        noteShared
+        noteSharedWithMe
+        noteDeShared
+    }
+    
+    type Notification {
+        type: NotificationType
+    }
+    
     type NoteUser {
         _id: ID!
         name: String
@@ -41,6 +54,14 @@ export default gql`
         update(id: String!, note: String!): ID
         delete(id: String!): ID
         share(id: String!, email: String!): ShareResponse
-        deshare(id: String!, email: String!): ShareResponse
+        deShare(id: String!, email: String!): ShareResponse
+    }
+    
+    extend type Subscription {
+        noteCreated: Note
+        noteUpdated: Note
+        noteDeleted: Note
+        noteShared: Note
+        noteDeShared: Note
     }
 `;
