@@ -39,10 +39,10 @@ export default {
       const newNote = await Note.create({ url, note, uid: user._id, scope });
       newNote.uid = user;
       pubSub.publish('NOTE_CREATED', {
-        noteCreated: formatNote(user)(newNote._doc),
+        noteCreated: formatNote(user)(newNote),
         recepients: [user._id.toString()],
       });
-      return formatNote(user)(newNote._doc);
+      return formatNote(user)(newNote);
     },
     update: async (parent: any, { id, note: noteStr }: any, { user }: any) => {
       if (!user || !user._id) {
@@ -56,7 +56,7 @@ export default {
       note.note = noteStr;
       await note.save();
       pubSub.publish('NOTE_UPDATED', {
-        noteUpdated: formatNote(user)(note._doc),
+        noteUpdated: formatNote(user)(note),
         recepients: [
           note.uid._id.toString(),
           ...note.sharedWith.map((share: any) => share._id.toString())
@@ -76,7 +76,7 @@ export default {
       if (note.uid._id.toString() !== user._id.toString()) {
         await Note.updateOne({ _id: id }, { $pull: { sharedWith: user._id } });
         pubSub.publish('NOTE_DESHARED', {
-          noteDeShared: formatNote(user)(note._doc),
+          noteDeShared: formatNote(user)(note),
           recepients: [
             note.uid._id.toString(),
             ...note.sharedWith
@@ -85,7 +85,7 @@ export default {
           ],
         });
         pubSub.publish('NOTE_DELETED', {
-          noteDeleted: formatNote(user)(note._doc),
+          noteDeleted: formatNote(user)(note),
           recepients: [
             user._id.toString(),
           ],
@@ -93,7 +93,7 @@ export default {
       } else {
         await Note.deleteOne({ _id: id, uid: user._id });
         pubSub.publish('NOTE_DELETED', {
-          noteDeleted: formatNote(user)(note._doc),
+          noteDeleted: formatNote(user)(note),
           recepients: [
             note.uid._id.toString(),
             ...note.sharedWith.map((share: any) => share._id.toString())
@@ -124,7 +124,7 @@ export default {
       note.sharedWith.push(shareUser);
       await note.save();
       pubSub.publish('NOTE_SHARED', {
-        noteShared: formatNote(user)(note._doc),
+        noteShared: formatNote(user)(note),
         recepients: [
           note.uid._id.toString(),
           ...note.sharedWith.map((share: any) => share._id.toString())
@@ -152,7 +152,7 @@ export default {
         (share: any) => share._id.toString() !== deShareUser._id.toString(),      );
       await note.save();
       pubSub.publish('NOTE_DESHARED', {
-        noteDeShared: formatNote(user)(note._doc),
+        noteDeShared: formatNote(user)(note),
         recepients: [
           note.uid._id.toString(),
           deShareUser._id.toString(),

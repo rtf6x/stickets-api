@@ -1,11 +1,8 @@
-import { Document, Model, Schema, model } from "mongoose";
+import { Schema, Types } from 'mongoose';
+import { DocumentType, getModelForClass, index, prop, ReturnModelType } from '@typegoose/typegoose';
 import upsertGoogleUser from "./user/upsertGoogleUser";
 import getUserByToken from "./user/getUserByToken";
 import generateJWT from "./user/generateJWT";
-
-export interface UserInterface extends Document {
-    generateJWT(): any;
-}
 
 interface GoogleResponse {
     profile: GoogleProfile,
@@ -20,26 +17,42 @@ interface GoogleProfile {
     photos: Array<any>,
 }
 
-interface UserModelInterface extends Model<any> {
-    getUserByToken(token: String): any;
-    upsertGoogleUser(response: GoogleResponse): any;
+@index({ googleId: 1 })
+export class UserClass {
+    @prop()
+    public _id!: Types.ObjectId;
+
+    @prop()
+    public googleId?: string;
+
+    @prop()
+    public name?: string;
+
+    @prop()
+    public email!: string;
+
+    @prop()
+    public avatar?: string;
+
+    @prop()
+    public googleProfile?: GoogleProfile;
+
+    // the "this" definition is required to have the correct types
+    public generateJWT(this: DocumentType<UserClass>) {
+        return generateJWT(this);
+    }
+
+    // the "this" definition is required to have the correct types
+    public static async getUserByToken(this: ReturnModelType<typeof UserClass>, token: string) {
+        return getUserByToken(this, token);
+    }
+
+    // the "this" definition is required to have the correct types
+    public static async upsertGoogleUser(this: ReturnModelType<typeof UserClass>, googleData: GoogleResponse) {
+        return upsertGoogleUser(this, googleData);
+    }
 }
 
-const schema = new Schema({
-    googleId: String,
-    name: String,
-    email: String,
-    avatar: String,
-    googleProfile: Object,
-}, {
-    timestamps: true,
-});
+export const UserModel = getModelForClass(UserClass, { schemaOptions: { timestamps: true, collection: 'users' } });
 
-schema.methods.generateJWT = generateJWT;
-schema.statics.getUserByToken = getUserByToken;
-schema.statics.upsertGoogleUser = upsertGoogleUser;
-
-schema.index({ googleId: 1 });
-
-const User: UserModelInterface = model<UserInterface, UserModelInterface>('user', schema);
-export default User;
+export default UserModel;

@@ -13,9 +13,10 @@ export class WSShutdownPlugin implements ApolloServerPlugin {
     }
 
     async serverWillStart() {
+        const that = this;
         return {
             async drainServer() {
-                await this.serverCleanup.dispose();
+                await that.serverCleanup.dispose();
             },
         };
     }

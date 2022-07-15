@@ -1,9 +1,11 @@
-export default async function ({ profile }: any) {
-    const User = this;
-    const user = await User.findOne({ googleId: profile.id });
+import { DocumentType, ReturnModelType } from '@typegoose/typegoose';
+import { UserClass } from '../user';
+
+export default async function (model: ReturnModelType<typeof UserClass>, { profile }: any): Promise<DocumentType<UserClass>> {
+    const user = await model.findOne({ googleId: profile.id });
     // no user was found, lets create a new one
     if (!user) {
-        const newUser = await User.create({
+        const newUser = await model.create({
             googleId: profile.id,
             name: profile.displayName || `${profile.familyName} ${profile.givenName}`,
             googleProfile: profile,

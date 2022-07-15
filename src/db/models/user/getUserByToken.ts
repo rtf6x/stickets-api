@@ -1,6 +1,8 @@
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import settings from '../../../settings';
+import { DocumentType, ReturnModelType } from '@typegoose/typegoose';
+import { UserClass } from '../user';
 
 interface getUserError {
   code: Number,
@@ -9,10 +11,10 @@ interface getUserError {
 
 export interface getUserResult {
   error: getUserError | null,
-  user: Document | null,
+  user: DocumentType<UserClass> | null,
 }
 
-export default async function (token: string): Promise<getUserResult> {
+export default async function (model: ReturnModelType<typeof UserClass>, token: string): Promise<getUserResult> {
   if (!token || token.length < 32) {
     return { error: { code: 0, message: 'no token provided' }, user: null };
   }
@@ -26,9 +28,8 @@ export default async function (token: string): Promise<getUserResult> {
   if (!tokenData || typeof tokenData === 'string' || !tokenData._id) {
     return { error: { code: 1, message: 'token is invalid' }, user: null };
   }
-  const user = await this.model('user')
-    .findOne({ _id: tokenData._id, googleId: tokenData.googleId })
-    .lean();
+  const user = await model
+    .findOne({ _id: tokenData._id, googleId: tokenData.googleId });
 
   if (!user) {
     return { error: { code: 2, message: 'user not found' }, user: null };

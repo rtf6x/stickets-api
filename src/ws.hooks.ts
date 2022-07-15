@@ -3,12 +3,14 @@ import { WebSocketServer } from 'ws';
 import { GraphQLSchema } from 'graphql';
 import { Context } from 'graphql-ws';
 import { getUserResult } from './db/models/user/getUserByToken';
-import User from './db/models/user';
+import User, { UserClass } from './db/models/user';
+import { DocumentType } from '@typegoose/typegoose';
 
 class Forbidden extends Error {
 }
+
 interface IContextWithUser extends Context {
-  user: Document;
+  user: DocumentType<UserClass>;
 }
 
 async function handleAuth(ctx: IContextWithUser) {
