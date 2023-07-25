@@ -23,7 +23,7 @@
     "graphql-ws": "^5.8.2",
     "jsonwebtoken": "^9.0.0",
     "lodash.merge": "^4.6.2",
-    "mongoose": "^6.4.6",
+    "mongoose": "^6.11.3",
     "passport": "^0.6.0",
     "passport-google-token": "^0.1.2",
     "ts-graphql-plugin": "^2.1.8",
